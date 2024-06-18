@@ -1,4 +1,4 @@
-Flask==2.0.2
-pandas==1.3.3
-streamlit==1.2.0
-stats_can==0.1.3
+Flask
+pandas
+streamlit
+stats_can
