@@ -1,21 +1,19 @@
-from flask import Flask, send_file
-import io
-from dataprocessing import df_yearly
+import streamlit as st
+import pandas as pd
 
-app = Flask(__name__)
+st.title("Labour Market Data Visualization")
 
-@app.route('/data.csv', methods=['GET'])
-def get_data_csv():
-    # Save DataFrame to a CSV file
-    csv_data = df_yearly.to_csv(index=False)
+# Define the URL of your Flask endpoint
+url = "http://localhost:5000/data.csv"
 
-    # Create an in-memory file-like object
-    csv_io = io.StringIO()
-    csv_io.write(csv_data)
-    csv_io.seek(0)
+# Fetch the data from the Flask endpoint
+@st.cache
+def load_data():
+    df = pd.read_csv(url)
+    return df
 
-    # Return the CSV file as a downloadable link
-    return send_file(csv_io, as_attachment=True, download_name='data.csv', mimetype='text/csv')
+# Load the data
+data = load_data()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Display the data in Streamlit
+st.write(data)
