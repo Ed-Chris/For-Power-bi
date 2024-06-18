@@ -1,4 +1,0 @@
-Flask
-pandas
-streamlit
-stats_can
