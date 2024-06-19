@@ -29,7 +29,14 @@ jobs:
       - name: Run update script
         run: python update_csv.py
 
+      - name: Check if there are changes to commit
+        id: check_changes
+        run: |
+          git diff-index --quiet HEAD || echo "Changes detected"
+        continue-on-error: true
+
       - name: Commit and push changes
+        if: steps.check_changes.outputs.return-value == 'Changes detected'
         run: |
           git config --global user.name 'Ed-Chris'
           git config --global user.email 'yedukrishnan215@gmail.com'
