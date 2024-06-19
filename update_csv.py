@@ -5,6 +5,9 @@ from stats_can import StatsCan
 # Initialize StatsCan
 sc = StatsCan()
 
+flag = {"checking"}
+flag_df = pd.DataFrame(flag)
+
 # Load data
 df = sc.table_to_df("14-10-0023-01")
 
@@ -50,6 +53,8 @@ processed_data.to_csv('processed_participation_rates.csv', index=False)
 
 # Save the original processed data to a CSV file
 df_yearly.to_csv('processed_stats_canada_data.csv', index=False)
+
+flag_df.to_csv('check.csv',index=False)
 
 # Display the processed DataFrame (optional)
 print("Data successfully saved to processed_stats_canada_data.csv and processed_participation_rates.csv")
