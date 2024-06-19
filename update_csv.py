@@ -5,7 +5,7 @@ from stats_can import StatsCan
 # Initialize StatsCan
 sc = StatsCan()
 
-flag = {"checking"}
+flag = {"changing"}
 flag_df = pd.DataFrame(flag)
 
 # Load data
