@@ -5,13 +5,10 @@ from stats_can import StatsCan
 # Initialize StatsCan
 sc = StatsCan()
 
-flag = {"changing"}
-flag_df = pd.DataFrame(flag)
-
-# Load data
+# Load labour data
 df = sc.table_to_df("14-10-0023-01")
 
-# Clean and rename DataFrame
+# Clean and rename DataFrame for labour data
 df_clean = df[['REF_DATE', 'Labour force characteristics', 'North American Industry Classification System (NAICS)', 'Sex', 'Age group', 'VALUE']]
 df_main = df_clean.rename(columns={
     'REF_DATE': 'Year',
@@ -19,8 +16,7 @@ df_main = df_clean.rename(columns={
     'North American Industry Classification System (NAICS)': 'Industry',
     'VALUE': 'Value'
 })
-df_main['Year'] = df_main['Year'].astype(str)
-df_main['Year'] = df_main['Year'].str[:4]
+df_main['Year'] = df_main['Year'].astype(str).str[:4]
 
 # Remove content inside square brackets from 'Industry' column
 df_main['Industry'] = df_main['Industry'].str.replace(r'\[.*?\]', '', regex=True).str.strip()
@@ -28,7 +24,7 @@ df_main['Industry'] = df_main['Industry'].str.replace(r'\[.*?\]', '', regex=True
 # Group by necessary columns and calculate the mean
 df_yearly = df_main.groupby(['Year', 'Characteristics', 'Industry', 'Sex', 'Age group'], as_index=False, observed=False).mean()
 
-# Filter the data to include only 'Employment', 'Full time', and 'Part time' characteristics
+# Filter the data to include only 'Employment', 'Full-time employment', and 'Part-time employment' characteristics
 selected_characteristics = ['Employment', 'Full-time employment', 'Part-time employment']
 employment_data = df_yearly[df_yearly['Characteristics'].isin(selected_characteristics)]
 
@@ -54,7 +50,45 @@ processed_data.to_csv('processed_participation_rates.csv', index=False)
 # Save the original processed data to a CSV file
 df_yearly.to_csv('processed_stats_canada_data.csv', index=False)
 
-flag_df.to_csv('check.csv',index=False)
+# Load wage data
+df_wages = sc.table_to_df("14-10-0064-01")
+
+# Clean and rename DataFrame for wages
+df_clean_wages = df_wages[['REF_DATE', 'Wages', 'Type of work', 'North American Industry Classification System (NAICS)', 'Sex', 'Age group', 'VALUE']]
+df_main_wages = df_clean_wages.rename(columns={
+    'REF_DATE': 'Year',
+    'Wages': 'Type of Wages',
+    'Type of work': 'Characteristics',
+    'North American Industry Classification System (NAICS)': 'Industry',
+    'VALUE': 'Value'
+})
+df_main_wages['Year'] = df_main_wages['Year'].astype(str).str[:4]
+
+# Remove content inside square brackets from 'Industry' column
+df_main_wages['Industry'] = df_main_wages['Industry'].str.replace(r'\[.*?\]', '', regex=True).str.strip()
+
+# Group by necessary columns and calculate the mean
+df_yearly_wages = df_main_wages.groupby(['Year', 'Type of Wages', 'Characteristics', 'Industry', 'Sex', 'Age group'], as_index=False, observed=False).mean()
+
+# Function to calculate the gender pay gap
+def calculate_gender_pay_gap(df):
+    # Pivot the table to have separate columns for Male and Female wages
+    df_pivot = df.pivot_table(index=['Year', 'Industry', 'Type of Wages'], columns='Sex', values='Value', aggfunc='mean').reset_index()
+    
+    # Calculate Gender Pay Ratio and Gender Pay Gap
+    df_pivot['Gender Pay Ratio'] = df_pivot['Females'] / df_pivot['Males']
+    df_pivot['Gender Pay Gap (%)'] = (1 - df_pivot['Gender Pay Ratio']) * 100
+    
+    return df_pivot
+
+# Apply the function to the wages DataFrame
+df_gender_pay_gap = calculate_gender_pay_gap(df_yearly_wages)
+
+# Save the processed data for general wages characpython update_csv.pyteristics to a CSV file
+df_yearly_wages.to_csv('processed_wages_data.csv', index=False)
+
+# Save the processed data for gender pay gap to a CSV file
+df_gender_pay_gap.to_csv('gender_pay_gap.csv', index=False)
 
 # Display the processed DataFrame (optional)
-print("Data successfully saved to processed_stats_canada_data.csv and processed_participation_rates.csv")
+print("Data successfully saved to processed_stats_canada_data.csv, processed_participation_rates.csv, processed_wages_data.csv, and gender_pay_gap.csv")
