@@ -1,5 +1,4 @@
 import pandas as pd
-import re
 from stats_can import StatsCan
 
 # Initialize StatsCan
