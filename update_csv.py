@@ -72,7 +72,7 @@ df_yearly_wages = df_main_wages.groupby(['Year', 'Type of Wages', 'Characteristi
 # Function to calculate the gender pay gap
 def calculate_gender_pay_gap(df):
     # Pivot the table to have separate columns for Male and Female wages
-    df_pivot = df.pivot_table(index=['Year', 'Industry', 'Type of Wages','Characteristics'], columns='Sex', values='Value', aggfunc='mean').reset_index()
+    df_pivot = df.pivot_table(index=['Year', 'Industry', 'Type of Wages', 'Characteristics'], columns='Sex', values='Value', aggfunc='mean').reset_index()
     
     # Calculate Gender Pay Ratio and Gender Pay Gap
     df_pivot['Gender Pay Ratio'] = df_pivot['Females'] / df_pivot['Males']
