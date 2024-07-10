@@ -98,10 +98,10 @@ for wage_type in unique_types_of_wages:
     df_combined_gender_pay_gap = pd.concat([df_combined_gender_pay_gap, df_gender_pay_gap], ignore_index=True)
 
 # Save the combined data to a single CSV file
-df_combined_gender_pay_gap.to_csv('combined_gender_pay_gap.csv', index=False)
+df_combined_gender_pay_gap.to_csv('gender_pay_gap.csv', index=False)
 
 # Save the processed data for general wages characpython update_csv.pyteristics to a CSV file
 df_yearly_wages.to_csv('processed_wages_data.csv', index=False)
 
 # Display the processed DataFrame (optional)
-print("Data successfully saved to processed_stats_canada_data.csv, processed_participation_rates.csv, processed_wages_data.csv, and combined_gender_pay_gap.csv")
+print("Data successfully saved to processed_stats_canada_data.csv, processed_participation_rates.csv, processed_wages_data.csv, and gender_pay_gap.csv")
