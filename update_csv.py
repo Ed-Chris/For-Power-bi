@@ -72,7 +72,7 @@ df_yearly_wages = df_main_wages.groupby(['Year', 'Type of Wages', 'Characteristi
 # Function to calculate the gender pay gap
 def calculate_gender_pay_gap(df):
     # Pivot the table to have separate columns for Male and Female wages
-    df_pivot = df.pivot_table(index=['Year', 'Industry', 'Type of Wages', 'Characteristics'], columns='Sex', values='Value', aggfunc='mean').reset_index()
+    df_pivot = df.pivot_table(index=['Year', 'Industry', 'Type of Wages', 'Characteristics', 'Age group'], columns='Sex', values='Value', aggfunc='mean').reset_index()
     
     # Calculate Gender Pay Ratio and Gender Pay Gap
     df_pivot['Gender Pay Ratio'] = df_pivot['Females'] / df_pivot['Males']
@@ -80,14 +80,28 @@ def calculate_gender_pay_gap(df):
     
     return df_pivot
 
-# Apply the function to the wages DataFrame
-df_gender_pay_gap = calculate_gender_pay_gap(df_yearly_wages)
+# Get unique types of wages
+unique_types_of_wages = df_yearly_wages['Type of Wages'].unique()
+
+# Initialize an empty DataFrame to store combined results
+df_combined_gender_pay_gap = pd.DataFrame()
+
+# Process and combine results for each type of wage
+for wage_type in unique_types_of_wages:
+    df_filtered = df_yearly_wages[df_yearly_wages['Type of Wages'] == wage_type]
+    df_gender_pay_gap = calculate_gender_pay_gap(df_filtered)
+    
+    # Add the type of wage as a column for clarity
+    df_gender_pay_gap['Type of Wages'] = wage_type
+    
+    # Concatenate the results to the combined DataFrame
+    df_combined_gender_pay_gap = pd.concat([df_combined_gender_pay_gap, df_gender_pay_gap], ignore_index=True)
+
+# Save the combined data to a single CSV file
+df_combined_gender_pay_gap.to_csv('combined_gender_pay_gap.csv', index=False)
 
 # Save the processed data for general wages characpython update_csv.pyteristics to a CSV file
 df_yearly_wages.to_csv('processed_wages_data.csv', index=False)
 
-# Save the processed data for gender pay gap to a CSV file
-df_gender_pay_gap.to_csv('gender_pay_gap.csv', index=False)
-
 # Display the processed DataFrame (optional)
-print("Data successfully saved to processed_stats_canada_data.csv, processed_participation_rates.csv, processed_wages_data.csv, and gender_pay_gap.csv")
+print("Data successfully saved to processed_stats_canada_data.csv, processed_participation_rates.csv, processed_wages_data.csv, and combined_gender_pay_gap.csv")
